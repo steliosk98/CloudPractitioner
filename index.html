@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWS Cloud Practitioner Study Tool — CLF-C02</title>
+  <meta name="description" content="Free study tool for the AWS Certified Cloud Practitioner exam (CLF-C02): flashcards by category and full-length practice exams.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="brand" id="brand-link">
+        <span class="brand-icon">☁️</span>
+        <span class="brand-text">AWS Cloud Practitioner<span class="brand-sub">CLF-C02 Study Tool</span></span>
+      </a>
+      <nav class="main-nav">
+        <button class="nav-btn" data-nav="home">Home</button>
+        <button class="nav-btn" data-nav="flashcards">Flashcards</button>
+        <button class="nav-btn" data-nav="exam">Practice Exam</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="app">
+    <!-- ===================== HOME ===================== -->
+    <section id="view-home" class="view">
+      <div class="hero">
+        <h1>Ace the AWS Certified Cloud Practitioner Exam</h1>
+        <p class="hero-sub">Study with flashcards organized by topic, then test yourself with full-length practice exams modeled on the real CLF-C02 exam.</p>
+      </div>
+      <div class="mode-cards">
+        <div class="mode-card" data-nav="flashcards">
+          <div class="mode-icon">🗂️</div>
+          <h2>Flashcards</h2>
+          <p>Study <span id="home-card-count">130+</span> flashcards across <span id="home-cat-count">11</span> categories. Pick a single topic or study everything at once.</p>
+          <button class="btn btn-primary">Start Studying</button>
+        </div>
+        <div class="mode-card" data-nav="exam">
+          <div class="mode-icon">📝</div>
+          <h2>Practice Exam</h2>
+          <p>65 questions, 90 minutes, weighted by official exam domains — just like the real thing. Detailed explanations after every exam.</p>
+          <button class="btn btn-primary">Take an Exam</button>
+        </div>
+      </div>
+      <div class="stats-panel" id="home-stats" hidden>
+        <h3>Your Progress</h3>
+        <div class="stats-grid" id="stats-grid"></div>
+        <button class="btn btn-ghost btn-small" id="reset-stats">Reset progress</button>
+      </div>
+      <div class="exam-facts">
+        <h3>About the real CLF-C02 exam</h3>
+        <ul>
+          <li><strong>65 questions</strong> (50 scored + 15 unscored) in <strong>90 minutes</strong></li>
+          <li>Multiple choice and multiple response questions</li>
+          <li>Passing score: <strong>700 / 1000</strong> (scaled)</li>
+          <li>Domains: Cloud Concepts (24%) · Security &amp; Compliance (30%) · Cloud Technology &amp; Services (34%) · Billing, Pricing &amp; Support (12%)</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===================== FLASHCARD SETUP ===================== -->
+    <section id="view-flashcard-setup" class="view" hidden>
+      <h1>Flashcards</h1>
+      <p class="view-sub">Choose one or more categories to study, or select all of them.</p>
+      <div class="select-actions">
+        <button class="btn btn-ghost btn-small" id="fc-select-all">Select all</button>
+        <button class="btn btn-ghost btn-small" id="fc-select-none">Clear selection</button>
+      </div>
+      <div class="category-grid" id="category-grid"></div>
+      <div class="setup-footer">
+        <label class="checkbox-label"><input type="checkbox" id="fc-shuffle" checked> Shuffle cards</label>
+        <button class="btn btn-primary btn-large" id="fc-start" disabled>Start — <span id="fc-count">0</span> cards</button>
+      </div>
+    </section>
+
+    <!-- ===================== FLASHCARD SESSION ===================== -->
+    <section id="view-flashcard-session" class="view" hidden>
+      <div class="session-bar">
+        <button class="btn btn-ghost btn-small" id="fc-exit">← Categories</button>
+        <div class="session-progress"><span id="fc-position">1</span> / <span id="fc-total">0</span></div>
+        <div class="session-score">✅ <span id="fc-known">0</span> &nbsp; ❌ <span id="fc-unknown">0</span></div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="fc-progress"></div></div>
+      <div class="flashcard-stage">
+        <div class="flashcard" id="flashcard" tabindex="0" role="button" aria-label="Flashcard — click to flip">
+          <div class="flashcard-inner" id="flashcard-inner">
+            <div class="flashcard-face flashcard-front">
+              <div class="card-category" id="card-category"></div>
+              <div class="card-text" id="card-front"></div>
+              <div class="card-hint">Click or press Space to flip</div>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <div class="card-category" id="card-category-back"></div>
+              <div class="card-text" id="card-back"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flashcard-controls">
+        <button class="btn btn-danger" id="fc-dont-know">❌ Still learning</button>
+        <button class="btn btn-ghost" id="fc-flip">Flip</button>
+        <button class="btn btn-success" id="fc-know">✅ Got it</button>
+      </div>
+      <p class="keyboard-hint">Keyboard: <kbd>Space</kbd> flip · <kbd>→</kbd> got it · <kbd>←</kbd> still learning</p>
+    </section>
+
+    <!-- ===================== FLASHCARD DONE ===================== -->
+    <section id="view-flashcard-done" class="view" hidden>
+      <div class="result-panel">
+        <h1>Session complete! 🎉</h1>
+        <div class="result-big" id="fc-result-summary"></div>
+        <div class="result-detail" id="fc-result-detail"></div>
+        <div class="result-actions">
+          <button class="btn btn-primary" id="fc-review-missed" hidden>Review missed cards</button>
+          <button class="btn btn-ghost" id="fc-restart">Study again</button>
+          <button class="btn btn-ghost" data-nav="flashcards">Change categories</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== EXAM INTRO ===================== -->
+    <section id="view-exam-intro" class="view" hidden>
+      <h1>Practice Exam</h1>
+      <p class="view-sub">A full-length simulation of the CLF-C02 exam.</p>
+      <div class="exam-intro-panel">
+        <ul class="exam-rules">
+          <li>📋 <strong id="exam-q-count">65</strong> questions drawn randomly from the question bank</li>
+          <li>⚖️ Weighted by the official domain percentages (24% / 30% / 34% / 12%)</li>
+          <li>⏱️ <strong id="exam-duration">90</strong>-minute timer (the exam auto-submits when time runs out)</li>
+          <li>🔀 Includes multiple-choice and multiple-response ("Select TWO") questions</li>
+          <li>🚩 Flag questions to revisit them before submitting</li>
+          <li>🎯 Passing bar: <strong>70%</strong> (approximates the real 700/1000 scaled score)</li>
+        </ul>
+        <div class="exam-mode-row">
+          <label class="checkbox-label"><input type="checkbox" id="exam-timed" checked> Timed mode (90 minutes)</label>
+        </div>
+        <button class="btn btn-primary btn-large" id="exam-start">Start Exam</button>
+      </div>
+      <div class="exam-history" id="exam-history" hidden>
+        <h3>Previous attempts</h3>
+        <div id="exam-history-list"></div>
+      </div>
+    </section>
+
+    <!-- ===================== EXAM SESSION ===================== -->
+    <section id="view-exam-session" class="view" hidden>
+      <div class="session-bar">
+        <button class="btn btn-ghost btn-small" id="exam-quit">Quit</button>
+        <div class="session-progress">Question <span id="exam-position">1</span> / <span id="exam-total">65</span></div>
+        <div class="exam-timer" id="exam-timer">90:00</div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="exam-progress"></div></div>
+      <div class="question-panel">
+        <div class="question-meta">
+          <span class="domain-badge" id="question-domain"></span>
+          <button class="flag-btn" id="exam-flag" title="Flag for review">🚩 Flag</button>
+        </div>
+        <div class="question-text" id="question-text"></div>
+        <div class="question-note" id="question-note" hidden>Select all answers that apply.</div>
+        <div class="options-list" id="options-list"></div>
+      </div>
+      <div class="exam-nav">
+        <button class="btn btn-ghost" id="exam-prev">← Previous</button>
+        <button class="btn btn-ghost" id="exam-overview-btn">Overview</button>
+        <button class="btn btn-primary" id="exam-next">Next →</button>
+      </div>
+    </section>
+
+    <!-- ===================== EXAM OVERVIEW ===================== -->
+    <section id="view-exam-overview" class="view" hidden>
+      <h1>Question Overview</h1>
+      <p class="view-sub">Click a question to jump to it. <span class="legend"><span class="dot dot-answered"></span> answered <span class="dot dot-flagged"></span> flagged <span class="dot dot-blank"></span> unanswered</span></p>
+      <div class="overview-grid" id="overview-grid"></div>
+      <div class="exam-nav">
+        <button class="btn btn-ghost" id="overview-back">← Back to exam</button>
+        <button class="btn btn-danger btn-large" id="exam-submit">Submit Exam</button>
+      </div>
+    </section>
+
+    <!-- ===================== EXAM RESULTS ===================== -->
+    <section id="view-exam-results" class="view" hidden>
+      <div class="result-panel">
+        <h1 id="result-verdict"></h1>
+        <div class="score-ring" id="score-ring"><span id="score-percent"></span></div>
+        <div class="result-detail" id="exam-result-detail"></div>
+        <h3>Score by domain</h3>
+        <div class="domain-results" id="domain-results"></div>
+        <div class="result-actions">
+          <button class="btn btn-primary" id="exam-review">Review answers</button>
+          <button class="btn btn-ghost" id="exam-retake">Take another exam</button>
+          <button class="btn btn-ghost" data-nav="home">Home</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== EXAM REVIEW ===================== -->
+    <section id="view-exam-review" class="view" hidden>
+      <div class="session-bar">
+        <button class="btn btn-ghost btn-small" id="review-back">← Results</button>
+        <h2 class="review-title">Answer Review</h2>
+        <label class="checkbox-label"><input type="checkbox" id="review-wrong-only"> Incorrect only</label>
+      </div>
+      <div id="review-list"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Free and open source study tool for the AWS Certified Cloud Practitioner exam (CLF-C02).
+       Content based on official AWS documentation and the AWS exam guide.
+       Not affiliated with Amazon Web Services.</p>
+  </footer>
+
+  <script src="data/flashcards.js"></script>
+  <script src="data/questions.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/flashcards.js"></script>
+  <script src="js/exam.js"></script>
+</body>
+</html>
