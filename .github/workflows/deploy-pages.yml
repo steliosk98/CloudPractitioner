@@ -1,14 +1,16 @@
 name: Deploy to GitHub Pages
 
+# Publishes the site by syncing main to the gh-pages branch, which GitHub
+# Pages serves from (Settings -> Pages -> Deploy from a branch: gh-pages).
+# This avoids the Pages "create site" API, which the workflow token cannot call.
+
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages
@@ -17,20 +19,10 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
         with:
-          enablement: true
-      - name: Upload site
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+          fetch-depth: 0
+      - name: Sync main to gh-pages
+        run: git push -f origin main:gh-pages
