@@ -123,20 +123,29 @@
     <!-- ===================== EXAM INTRO ===================== -->
     <section id="view-exam-intro" class="view" hidden>
       <h1>Practice Exam</h1>
-      <p class="view-sub">A full-length simulation of the CLF-C02 exam.</p>
+      <p class="view-sub">A full-length simulation of the CLF-C02 exam — or a shorter practice round.</p>
       <div class="exam-intro-panel">
+        <div class="exam-length-row">
+          <label for="exam-count-slider">Number of questions:
+            <strong id="exam-count-label">65</strong>
+            <span class="full-tag" id="exam-full-tag">full exam</span>
+          </label>
+          <input type="range" id="exam-count-slider" min="10" max="65" step="5" value="65"
+                 aria-label="Number of exam questions">
+          <div class="slider-scale"><span>10 · quick practice</span><span>65 · full exam</span></div>
+        </div>
         <ul class="exam-rules">
           <li>📋 <strong id="exam-q-count">65</strong> questions drawn randomly from the question bank</li>
           <li>⚖️ Weighted by the official domain percentages (24% / 30% / 34% / 12%)</li>
-          <li>⏱️ <strong id="exam-duration">90</strong>-minute timer (the exam auto-submits when time runs out)</li>
+          <li>⏱️ <strong id="exam-duration">90</strong>-minute timer, scaled to exam length (auto-submits when time runs out)</li>
           <li>🔀 Includes multiple-choice and multiple-response ("Select TWO") questions</li>
           <li>🚩 Flag questions to revisit them before submitting</li>
           <li>🎯 Passing bar: <strong>70%</strong> (approximates the real 700/1000 scaled score)</li>
         </ul>
         <div class="exam-mode-row">
-          <label class="checkbox-label"><input type="checkbox" id="exam-timed" checked> Timed mode (90 minutes)</label>
+          <label class="checkbox-label"><input type="checkbox" id="exam-timed" checked> Timed mode (<span id="exam-timed-mins">90</span> minutes)</label>
         </div>
-        <button class="btn btn-primary btn-large" id="exam-start">Start Exam</button>
+        <button class="btn btn-primary btn-large" id="exam-start">Start Exam — <span id="exam-start-count">65</span> questions</button>
       </div>
       <div class="exam-history" id="exam-history" hidden>
         <h3>Previous attempts</h3>
