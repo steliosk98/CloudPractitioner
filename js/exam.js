@@ -14,10 +14,48 @@ const Exam = {
 
   // ---------- Intro ----------
   showIntro() {
-    document.getElementById("exam-q-count").textContent = EXAM_CONFIG.totalQuestions;
-    document.getElementById("exam-duration").textContent = EXAM_CONFIG.durationMinutes;
+    this.updateLengthUI();
     this.renderHistory();
     App.show("exam-intro");
+  },
+
+  selectedCount() {
+    return Number(document.getElementById("exam-count-slider").value);
+  },
+
+  // Timer scales proportionally with exam length (90 min for the full 65).
+  durationFor(count) {
+    return Math.max(5, Math.round(count * EXAM_CONFIG.durationMinutes / EXAM_CONFIG.totalQuestions));
+  },
+
+  // Per-domain question counts for any exam length, keeping the official
+  // weighting: floor the ideal share, then hand out the remainder to the
+  // domains with the largest fractional parts.
+  distributionFor(count) {
+    if (count === EXAM_CONFIG.totalQuestions) return EXAM_CONFIG.distribution;
+    const dist = {};
+    const fracs = [];
+    let assigned = 0;
+    for (const [id, meta] of Object.entries(EXAM_DOMAINS)) {
+      const ideal = count * meta.weight / 100;
+      dist[id] = Math.floor(ideal);
+      assigned += dist[id];
+      fracs.push({ id, frac: ideal - dist[id] });
+    }
+    fracs.sort((a, b) => b.frac - a.frac);
+    for (let i = 0; assigned < count; i++, assigned++) dist[fracs[i % fracs.length].id]++;
+    return dist;
+  },
+
+  updateLengthUI() {
+    const count = this.selectedCount();
+    const mins = this.durationFor(count);
+    document.getElementById("exam-count-label").textContent = count;
+    document.getElementById("exam-full-tag").hidden = count !== EXAM_CONFIG.totalQuestions;
+    document.getElementById("exam-q-count").textContent = count;
+    document.getElementById("exam-duration").textContent = mins;
+    document.getElementById("exam-timed-mins").textContent = mins;
+    document.getElementById("exam-start-count").textContent = count;
   },
 
   renderHistory() {
@@ -37,9 +75,9 @@ const Exam = {
   },
 
   // ---------- Exam assembly ----------
-  build() {
+  build(totalCount) {
     const exam = [];
-    for (const [domain, count] of Object.entries(EXAM_CONFIG.distribution)) {
+    for (const [domain, count] of Object.entries(this.distributionFor(totalCount))) {
       const pool = App.shuffle(QUESTION_BANK.filter(q => q.domain === domain));
       exam.push(...pool.slice(0, Math.min(count, pool.length)));
     }
@@ -59,7 +97,8 @@ const Exam = {
   },
 
   start() {
-    this.questions = this.build();
+    const count = this.selectedCount();
+    this.questions = this.build(count);
     this.answers = this.questions.map(() => new Set());
     this.flags = this.questions.map(() => false);
     this.index = 0;
@@ -70,7 +109,7 @@ const Exam = {
     clearInterval(this.timerId);
     const timerEl = document.getElementById("exam-timer");
     if (this.timed) {
-      this.endTime = Date.now() + EXAM_CONFIG.durationMinutes * 60 * 1000;
+      this.endTime = Date.now() + this.durationFor(count) * 60 * 1000;
       timerEl.hidden = false;
       timerEl.classList.remove("warning");
       this.tick();
@@ -303,6 +342,7 @@ const Exam = {
 
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("exam-start").addEventListener("click", () => Exam.start());
+  document.getElementById("exam-count-slider").addEventListener("input", () => Exam.updateLengthUI());
   document.getElementById("exam-prev").addEventListener("click", () => Exam.go(-1));
   document.getElementById("exam-next").addEventListener("click", () => Exam.go(1));
   document.getElementById("exam-flag").addEventListener("click", () => Exam.toggleFlag());

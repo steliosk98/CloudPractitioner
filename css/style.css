@@ -365,6 +365,36 @@ kbd {
   box-shadow: var(--shadow);
   margin-bottom: 1.5rem;
 }
+.exam-length-row { margin-bottom: 1.4rem; }
+.exam-length-row label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.55rem;
+}
+.exam-length-row #exam-count-label { font-size: 1.15rem; color: var(--navy); }
+.full-tag {
+  background: var(--green-bg);
+  color: var(--green);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  margin-left: 0.35rem;
+  vertical-align: middle;
+}
+#exam-count-slider {
+  width: 100%;
+  accent-color: var(--orange);
+  cursor: pointer;
+  margin: 0.2rem 0;
+}
+.slider-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
 .exam-rules { list-style: none; margin-bottom: 1.2rem; }
 .exam-rules li { padding: 0.35rem 0; }
 .exam-mode-row { margin-bottom: 1.2rem; }

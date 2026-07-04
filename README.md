@@ -11,8 +11,8 @@ It runs 100% in the browser with no build step, no backend, and no dependencies 
 - Flip animation, shuffle mode, and keyboard shortcuts (`Space` to flip, `→` got it, `←` still learning)
 - End-of-session summary with the option to re-study just the cards you missed
 
-### 📝 Full practice exam
-- **65 questions in 90 minutes**, modeled on the real exam
+### 📝 Practice exam
+- **65 questions in 90 minutes**, modeled on the real exam — or pick a **shorter exam (10–60 questions)** with a slider; the timer and domain mix scale proportionally
 - Questions are drawn randomly from a **124-question bank** using the official domain weighting:
   - Cloud Concepts — 24%
   - Security and Compliance — 30%
